@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="职业画师稿件排期管理与可视化工具">
+  <title>稿件排期管理 | Artist Scheduler</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 顶部标题区域 -->
+  <header class="header">
+    <h1>✨ 稿件排期管理</h1>
+    <p>Artist Schedule | 职业画师工作流管理</p>
+  </header>
+
+  <!-- 主容器 -->
+  <div class="container">
+    <!-- 工具栏:筛选与视图切换 -->
+    <div class="toolbar">
+      <!-- 筛选器 -->
+      <div class="filters">
+        <select id="yearFilter">
+          <option value="">📅 选择年份</option>
+        </select>
+
+        <select id="monthFilter">
+          <option value="">📆 全部月份</option>
+          <option value="1月">1月</option>
+          <option value="2月">2月</option>
+          <option value="3月">3月</option>
+          <option value="4月">4月</option>
+          <option value="5月">5月</option>
+          <option value="6月">6月</option>
+          <option value="7月">7月</option>
+          <option value="8月">8月</option>
+          <option value="9月">9月</option>
+          <option value="10月">10月</option>
+          <option value="11月">11月</option>
+          <option value="12月">12月</option>
+        </select>
+
+        <select id="typeFilter">
+          <option value="">🎨 全部类型</option>
+        </select>
+
+        <select id="statusFilter">
+          <option value="">🔖 全部状态</option>
+          <option value="待开始">待开始</option>
+          <option value="已确认">已确认</option>
+          <option value="未确认">未确认</option>
+        </select>
+      </div>
+
+      <!-- 视图切换 -->
+      <div class="view-toggle">
+        <button class="view-btn active" data-view="list">📋 列表</button>
+        <button class="view-btn" data-view="calendar">📅 日历</button>
+        <button class="view-btn" data-view="timeline">📊 时间轴</button>
+      </div>
+    </div>
+
+    <!-- 年份导航 -->
+    <div class="month-nav">
+      <button id="prevYear">◀ 上一年</button>
+      <div class="current-month" id="currentYear">2025年</div>
+      <button id="nextYear">下一年 ▶</button>
+    </div>
+
+    <!-- ========== 列表视图 ========== -->
+    <div id="listView" class="view-container list-view">
+      <div class="loading">加载中</div>
+    </div>
+
+    <!-- ========== 日历视图 ========== -->
+    <div id="calendarView" class="view-container calendar-view hidden">
+      <div class="loading">加载中</div>
+    </div>
+
+    <!-- ========== 时间轴视图 ========== -->
+    <div id="timelineView" class="view-container timeline-view hidden">
+      <div class="loading">加载中</div>
+    </div>
+  </div>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <p>© 2025 Artist Scheduler | 用心管理每一份创作 🎨</p>
+    <p>Made with ❤️ for Artists</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,724 @@
+/* ========== 全局样式与配色 ========== */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Nunito:wght@300;400;600;700&display=swap');
+
+:root {
+  /* 配色方案 */
+  --bg-color: #F9F6F1;
+  --primary-color: #A6B1E1;
+  --accent-color: #E9A6A6;
+  --status-inprogress: #7D9D9C;
+  --status-pending: #C7C7C7;
+  --status-completed: #88B04B;
+  --status-confirmed: #88B04B;
+  --status-unconfirmed: #E9A6A6;
+  --text-color: #333333;
+  --card-bg: #FFFFFF;
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-hover: rgba(0, 0, 0, 0.15);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ========== 顶部标题区域 ========== */
+.header {
+  text-align: center;
+  padding: 3rem 2rem 2rem;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+  color: white;
+  position: relative;
+  box-shadow: 0 4px 12px var(--shadow-light);
+}
+
+.header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+}
+
+.header p {
+  font-size: 1rem;
+  opacity: 0.95;
+  font-weight: 300;
+}
+
+/* ========== 主容器 ========== */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* ========== 工具栏（筛选与切换） ========== */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+.filters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filters select {
+  padding: 0.6rem 1.2rem;
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  background: white;
+  color: var(--text-color);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filters select:hover {
+  border-color: var(--accent-color);
+  box-shadow: 0 2px 6px var(--shadow-light);
+}
+
+.view-toggle {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.view-btn {
+  padding: 0.6rem 1.5rem;
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  background: white;
+  color: var(--text-color);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.view-btn:hover {
+  background: var(--primary-color);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.view-btn.active {
+  background: var(--primary-color);
+  color: white;
+  font-weight: 600;
+}
+
+/* ========== 月份导航 ========== */
+.month-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.month-nav button {
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary-color);
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.month-nav button:hover {
+  background: var(--accent-color);
+  transform: scale(1.05);
+}
+
+.current-month {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+/* ========== 视图容器 ========== */
+.view-container {
+  min-height: 500px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.view-container.hidden {
+  display: none;
+}
+
+/* ========== 列表视图 ========== */
+.list-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.task-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 6px var(--shadow-light);
+  border-left: 5px solid var(--status-pending);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.task-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px var(--shadow-hover);
+}
+
+.task-card.进行中 {
+  border-left-color: var(--status-inprogress);
+}
+
+.task-card.待开始 {
+  border-left-color: var(--status-pending);
+}
+
+.task-card.已完成 {
+  border-left-color: var(--status-completed);
+}
+
+.task-card.已确认 {
+  border-left-color: var(--status-confirmed);
+}
+
+.task-card.未确认 {
+  border-left-color: var(--status-unconfirmed);
+}
+
+.task-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.task-card .month {
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+
+.task-card .partner,
+.task-card .location {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.task-card .artists {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.8rem;
+  line-height: 1.4;
+}
+
+.task-card .status-badge {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+}
+
+.status-badge.进行中 {
+  background: var(--status-inprogress);
+}
+
+.status-badge.待开始 {
+  background: var(--status-pending);
+}
+
+.status-badge.已完成 {
+  background: var(--status-completed);
+}
+
+.status-badge.已确认 {
+  background: var(--status-confirmed);
+}
+
+.status-badge.未确认 {
+  background: var(--status-unconfirmed);
+}
+
+/* ========== 日历视图 ========== */
+.calendar-view {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+/* 年历视图 - 按月份分组 */
+.year-calendar {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.month-section {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px var(--shadow-light);
+  transition: all 0.3s ease;
+}
+
+.month-section:hover {
+  box-shadow: 0 4px 12px var(--shadow-hover);
+  transform: translateY(-3px);
+}
+
+.month-header {
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.month-tasks {
+  padding: 1rem;
+  min-height: 100px;
+}
+
+.no-tasks {
+  text-align: center;
+  color: #999;
+  padding: 2rem 0;
+  font-size: 0.9rem;
+}
+
+.calendar-task {
+  background: var(--status-pending);
+  color: white;
+  padding: 0.7rem;
+  margin-bottom: 0.7rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.calendar-task:hover {
+  opacity: 0.85;
+  transform: translateX(3px);
+}
+
+.calendar-task:last-child {
+  margin-bottom: 0;
+}
+
+.calendar-task .task-type {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+}
+
+.calendar-task .task-artists {
+  font-size: 0.8rem;
+  opacity: 0.9;
+  margin-bottom: 0.2rem;
+}
+
+.calendar-task .task-partner,
+.calendar-task .task-location {
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+.calendar-task.已确认 {
+  background: var(--status-confirmed);
+}
+
+.calendar-task.未确认 {
+  background: var(--status-unconfirmed);
+}
+
+.calendar-task.待开始 {
+  background: var(--status-pending);
+}
+
+/* 旧的日历网格样式 - 保留以防需要 */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: #ddd;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.calendar-header {
+  background: var(--primary-color);
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.calendar-day {
+  background: white;
+  min-height: 100px;
+  padding: 0.5rem;
+  position: relative;
+  transition: background 0.2s ease;
+}
+
+.calendar-day:hover {
+  background: #f9f9f9;
+}
+
+.calendar-day.other-month {
+  background: #f5f5f5;
+  opacity: 0.5;
+}
+
+.day-number {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+}
+
+.calendar-day.other-month .day-number {
+  color: #999;
+}
+
+.calendar-task {
+  background: var(--status-pending);
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.4rem;
+  margin: 0.2rem 0;
+  border-radius: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.calendar-task:hover {
+  opacity: 0.8;
+  transform: scale(1.02);
+}
+
+.calendar-task.进行中 {
+  background: var(--status-inprogress);
+}
+
+.calendar-task.已完成 {
+  background: var(--status-completed);
+}
+
+/* ========== 时间轴视图 ========== */
+.timeline-view {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+.timeline-container {
+  position: relative;
+  padding: 2rem 0;
+}
+
+.timeline-axis {
+  position: relative;
+  height: 2px;
+  background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+  margin: 2rem 0;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 3rem;
+  padding-left: 2rem;
+  opacity: 0;
+  animation: slideIn 0.5s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--status-pending);
+  border: 3px solid var(--card-bg);
+  box-shadow: 0 0 0 3px var(--primary-color);
+}
+
+.timeline-item.进行中::before {
+  background: var(--status-inprogress);
+}
+
+.timeline-item.已完成::before {
+  background: var(--status-completed);
+}
+
+.timeline-item.已确认::before {
+  background: var(--status-confirmed);
+}
+
+.timeline-item.未确认::before {
+  background: var(--status-unconfirmed);
+}
+
+.timeline-item.待开始::before {
+  background: var(--status-pending);
+}
+
+.timeline-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px var(--shadow-light);
+  border-left: 4px solid var(--status-pending);
+  transition: all 0.3s ease;
+  margin-left: 1rem;
+}
+
+.timeline-card:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px var(--shadow-hover);
+}
+
+.timeline-card.进行中 {
+  border-left-color: var(--status-inprogress);
+}
+
+.timeline-card.已完成 {
+  border-left-color: var(--status-completed);
+}
+
+.timeline-card.已确认 {
+  border-left-color: var(--status-confirmed);
+}
+
+.timeline-card.未确认 {
+  border-left-color: var(--status-unconfirmed);
+}
+
+.timeline-card.待开始 {
+  border-left-color: var(--status-pending);
+}
+
+.timeline-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.timeline-card .timeline-month {
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+
+.timeline-card .partner,
+.timeline-card .location {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.timeline-card .artists {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.8rem;
+  line-height: 1.4;
+}
+
+.timeline-progress {
+  width: 100%;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 1rem 0;
+}
+
+.timeline-progress-bar {
+  height: 100%;
+  background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+  transition: width 0.5s ease;
+  border-radius: 10px;
+}
+
+/* ========== 页脚 ========== */
+.footer {
+  text-align: center;
+  padding: 2rem;
+  margin-top: 3rem;
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.footer a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer a:hover {
+  color: var(--accent-color);
+}
+
+/* ========== 响应式设计 ========== */
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 1.8rem;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters,
+  .view-toggle {
+    flex-direction: column;
+  }
+
+  .month-nav {
+    gap: 1rem;
+  }
+
+  .current-month {
+    font-size: 1.4rem;
+  }
+
+  .list-view {
+    grid-template-columns: 1fr;
+  }
+
+  .calendar-grid {
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .calendar-day {
+    min-height: 80px;
+    font-size: 0.75rem;
+  }
+
+  .calendar-task {
+    font-size: 0.6rem;
+  }
+
+  .timeline-card {
+    margin-left: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .header {
+    padding: 2rem 1rem 1.5rem;
+  }
+
+  .header h1 {
+    font-size: 1.5rem;
+  }
+
+  .calendar-day {
+    min-height: 60px;
+    padding: 0.3rem;
+  }
+
+  .day-number {
+    font-size: 0.75rem;
+  }
+}
+
+/* ========== 加载动画 ========== */
+.loading {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+}
+
+.loading::after {
+  content: '...';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% {
+    content: '.';
+  }
+  40% {
+    content: '..';
+  }
+  60%, 100% {
+    content: '...';
+  }
+}
+
+/* ========== 空状态 ========== */
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #999;
+}
+
+.empty-state p {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
