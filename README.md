@@ -34,12 +34,12 @@
 ## 🚀 快速开始
 
 ### 在线访问
-访问 [GitHub Pages 链接](https://your-username.github.io/Artist-Scheduler/)
+访问 [GitHub Pages 链接](https://xucheri.github.io/Artist-Scheduler/)
 
 ### 本地运行
 ```bash
 # 克隆仓库
-git clone https://github.com/your-username/Artist-Scheduler.git
+git clone https://github.com/xucheri/Artist-Scheduler.git
 
 # 进入目录
 cd Artist-Scheduler
