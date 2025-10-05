@@ -7,6 +7,9 @@
   <title>稿件排期管理 | Artist Scheduler</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="features.css">
+  <!-- jsPDF库 + html2canvas + 中文字体支持 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
   <!-- 顶部标题区域 -->
@@ -162,10 +165,6 @@
             <input type="text" id="taskType" required placeholder="双人机/情头/双男等" />
           </div>
           <div class="form-group">
-            <label>合作伙伴</label>
-            <input type="text" id="taskPartner" placeholder="可选" />
-          </div>
-          <div class="form-group">
             <label>地点</label>
             <input type="text" id="taskLocation" placeholder="可选" />
           </div>
@@ -190,6 +189,59 @@
       <div class="modal-footer">
         <button class="btn btn-secondary" id="formModalClose">取消</button>
         <button class="btn btn-primary" id="formModalSave">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 导出选择弹窗 ========== -->
+  <div id="exportModal" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content modal-small">
+      <div class="modal-header">
+        <h2>导出数据</h2>
+        <button class="modal-close" id="closeExportModal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="export-options">
+          <div class="export-option" data-format="json">
+            <div class="export-icon">📄</div>
+            <div class="export-info">
+              <div class="export-title">JSON格式</div>
+              <div class="export-desc">适合数据备份和迁移</div>
+            </div>
+          </div>
+          <div class="export-option" data-format="csv">
+            <div class="export-icon">📊</div>
+            <div class="export-info">
+              <div class="export-title">CSV格式</div>
+              <div class="export-desc">适合Excel分析</div>
+            </div>
+          </div>
+          <div class="export-option" data-format="pdf">
+            <div class="export-icon">📑</div>
+            <div class="export-info">
+              <div class="export-title">PDF报表</div>
+              <div class="export-desc">适合打印和分享</div>
+            </div>
+          </div>
+          <div class="export-option" data-format="pdf-all">
+            <div class="export-icon">📕</div>
+            <div class="export-info">
+              <div class="export-title">完整PDF报表</div>
+              <div class="export-desc">导出所有年份所有数据的PDF</div>
+            </div>
+          </div>
+          <div class="export-option export-all" data-format="all">
+            <div class="export-icon">📦</div>
+            <div class="export-info">
+              <div class="export-title">一键导出全部</div>
+              <div class="export-desc">同时导出JSON、CSV、PDF三种格式</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="exportModalClose">取消</button>
       </div>
     </div>
   </div>

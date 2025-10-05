@@ -51,10 +51,6 @@ const TaskManager = {
     const modalBody = document.getElementById('modalBody');
 
     const artistsText = task.artists ? task.artists.join('、') : '';
-    const partnerText = task.partner ? `<div class="detail-row">
-      <div class="detail-label">🤝 合作伙伴</div>
-      <div class="detail-value">${task.partner}</div>
-    </div>` : '';
     const locationText = task.location ? `<div class="detail-row">
       <div class="detail-label">📍 地点</div>
       <div class="detail-value">${task.location}</div>
@@ -72,7 +68,6 @@ const TaskManager = {
         <div class="detail-label">📅 时间</div>
         <div class="detail-value">${task.year}年 ${task.month}</div>
       </div>
-      ${partnerText}
       ${locationText}
       <div class="detail-row">
         <div class="detail-label">👥 参与画师</div>
@@ -108,7 +103,6 @@ const TaskManager = {
       document.getElementById('taskYear').value = task.year;
       document.getElementById('taskMonth').value = task.month;
       document.getElementById('taskType').value = task.type;
-      document.getElementById('taskPartner').value = task.partner || '';
       document.getElementById('taskLocation').value = task.location || '';
       document.getElementById('taskArtists').value = task.artists ? task.artists.join(',') : '';
       document.getElementById('taskStatus').value = task.status;
@@ -143,7 +137,6 @@ const TaskManager = {
       year: document.getElementById('taskYear').value,
       month: document.getElementById('taskMonth').value,
       type: document.getElementById('taskType').value,
-      partner: document.getElementById('taskPartner').value || undefined,
       location: document.getElementById('taskLocation').value || undefined,
       artists: document.getElementById('taskArtists').value.split(',').map(a => a.trim()).filter(a => a),
       status: document.getElementById('taskStatus').value,
@@ -413,7 +406,17 @@ const GanttChart = {
 
 // ========== 数据导出 ==========
 const DataExporter = {
-  exportToJSON() {
+  showExportModal() {
+    const modal = document.getElementById('exportModal');
+    modal.classList.remove('hidden');
+  },
+
+  closeExportModal() {
+    const modal = document.getElementById('exportModal');
+    modal.classList.add('hidden');
+  },
+
+  exportToJSON(silent = false) {
     const dataByYear = {};
     allTasks.forEach(task => {
       if (!dataByYear[task.year]) {
@@ -431,16 +434,18 @@ const DataExporter = {
     a.click();
     URL.revokeObjectURL(url);
 
-    showNotification('数据已导出!', 'success');
+    if (!silent) {
+      this.closeExportModal();
+      showNotification('数据已导出为JSON!', 'success');
+    }
   },
 
-  exportToCSV() {
-    const headers = ['年份', '月份', '类型', '合作伙伴', '地点', '画师', '状态', '备注'];
+  exportToCSV(silent = false) {
+    const headers = ['年份', '月份', '类型', '地点', '画师', '状态', '备注'];
     const rows = allTasks.map(task => [
       task.year,
       task.month,
       task.type,
-      task.partner || '',
       task.location || '',
       (task.artists || []).join(';'),
       task.status,
@@ -460,7 +465,455 @@ const DataExporter = {
     a.click();
     URL.revokeObjectURL(url);
 
-    showNotification('数据已导出为CSV!', 'success');
+    if (!silent) {
+      this.closeExportModal();
+      showNotification('数据已导出为CSV!', 'success');
+    }
+  },
+
+  async exportToPDF(silent = false) {
+    try {
+      if (!silent) {
+        showNotification('正在生成PDF...', 'info');
+      }
+
+      // 创建一个临时容器用于PDF内容
+      const pdfContainer = document.createElement('div');
+      pdfContainer.style.cssText = `
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        width: 800px;
+        background: white;
+        padding: 40px;
+        font-family: 'Nunito', 'Microsoft YaHei', sans-serif;
+      `;
+
+      // 统计信息
+      const stats = this.calculateStats();
+      const dateStr = new Date().toLocaleDateString('zh-CN');
+
+      // 生成PDF内容HTML
+      let htmlContent = `
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #A6B1E1; font-size: 32px; margin: 0 0 10px 0; font-family: 'Playfair Display', serif;">✨ 稿件排期管理</h1>
+          <h2 style="color: #E9A6A6; font-size: 24px; margin: 0 0 10px 0;">Artist Scheduler</h2>
+          <p style="color: #888; font-size: 14px; margin: 0;">导出日期: ${dateStr}</p>
+        </div>
+
+        <div style="background: #F9F6F1; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+          <h3 style="color: #2C2C2C; margin: 0 0 15px 0; font-size: 18px;">📊 统计信息</h3>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+            <div style="text-align: center;">
+              <div style="font-size: 28px; font-weight: bold; color: #A6B1E1;">${stats.total}</div>
+              <div style="font-size: 12px; color: #666; margin-top: 5px;">总任务数</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 28px; font-weight: bold; color: #6B9080;">${stats.confirmed}</div>
+              <div style="font-size: 12px; color: #666; margin-top: 5px;">已确认</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 28px; font-weight: bold; color: #D4C5B9;">${stats.pending}</div>
+              <div style="font-size: 12px; color: #666; margin-top: 5px;">待开始</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 28px; font-weight: bold; color: #E8B4B8;">${stats.unconfirmed}</div>
+              <div style="font-size: 12px; color: #666; margin-top: 5px;">未确认</div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: #2C2C2C; margin: 0 0 15px 0; font-size: 18px;">📋 任务详情</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+          <thead>
+            <tr style="background: linear-gradient(135deg, #A6B1E1, #E9A6A6); color: white;">
+              <th style="padding: 12px 8px; text-align: center; border: 1px solid #ddd;">年份</th>
+              <th style="padding: 12px 8px; text-align: center; border: 1px solid #ddd;">月份</th>
+              <th style="padding: 12px 8px; text-align: left; border: 1px solid #ddd;">类型</th>
+              <th style="padding: 12px 8px; text-align: center; border: 1px solid #ddd;">状态</th>
+              <th style="padding: 12px 8px; text-align: left; border: 1px solid #ddd;">地点</th>
+              <th style="padding: 12px 8px; text-align: left; border: 1px solid #ddd;">参与画师</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      // 按年份和月份分组
+      const tasksByYear = {};
+      filteredTasks.forEach(task => {
+        if (!tasksByYear[task.year]) {
+          tasksByYear[task.year] = {};
+        }
+        if (!tasksByYear[task.year][task.month]) {
+          tasksByYear[task.year][task.month] = [];
+        }
+        tasksByYear[task.year][task.month].push(task);
+      });
+
+      // 生成表格行
+      let rowIndex = 0;
+      const monthsZh = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+
+      Object.keys(tasksByYear).sort((a, b) => b - a).forEach(year => {
+        monthsZh.forEach(month => {
+          if (tasksByYear[year][month]) {
+            tasksByYear[year][month].forEach(task => {
+              const statusColor =
+                task.status === '已确认' ? '#6B9080' :
+                task.status === '待开始' ? '#D4C5B9' : '#E8B4B8';
+
+              const bgColor = rowIndex % 2 === 0 ? '#FFFFFF' : '#F9F6F1';
+              const artistsText = task.artists ? task.artists.join('、') : '-';
+
+              htmlContent += `
+                <tr style="background: ${bgColor};">
+                  <td style="padding: 10px 8px; text-align: center; border: 1px solid #ddd;">${year}</td>
+                  <td style="padding: 10px 8px; text-align: center; border: 1px solid #ddd;">${month}</td>
+                  <td style="padding: 10px 8px; border: 1px solid #ddd;">${task.type || '-'}</td>
+                  <td style="padding: 10px 8px; text-align: center; border: 1px solid #ddd;">
+                    <span style="background: ${statusColor}; color: white; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold;">${task.status || '-'}</span>
+                  </td>
+                  <td style="padding: 10px 8px; border: 1px solid #ddd;">${task.location || '-'}</td>
+                  <td style="padding: 10px 8px; border: 1px solid #ddd;">${artistsText}</td>
+                </tr>
+              `;
+              rowIndex++;
+            });
+          }
+        });
+      });
+
+      htmlContent += `
+          </tbody>
+        </table>
+        <div style="margin-top: 30px; text-align: center; color: #888; font-size: 12px;">
+          <p>© 2025 Artist Scheduler | 用心管理每一份创作 🎨</p>
+          <p>Made with ❤️ for Artists</p>
+        </div>
+      `;
+
+      pdfContainer.innerHTML = htmlContent;
+      document.body.appendChild(pdfContainer);
+
+      // 使用html2canvas将内容转换为图片
+      const canvas = await html2canvas(pdfContainer, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        windowHeight: pdfContainer.scrollHeight
+      });
+
+      // 移除临时容器
+      document.body.removeChild(pdfContainer);
+
+      // 创建PDF
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('p', 'mm', 'a4');
+
+      const imgWidth = 210; // A4宽度(mm)
+      const pageHeight = 297; // A4高度(mm)
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      // 计算需要多少页
+      const pageCount = Math.ceil(imgHeight / pageHeight);
+
+      // 逐页添加内容,避免在中间截断
+      for (let i = 0; i < pageCount; i++) {
+        if (i > 0) {
+          doc.addPage();
+        }
+
+        const sourceY = i * (canvas.height / pageCount);
+        const sourceHeight = canvas.height / pageCount;
+
+        // 创建临时canvas来裁剪当前页
+        const pageCanvas = document.createElement('canvas');
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = sourceHeight;
+        const pageCtx = pageCanvas.getContext('2d');
+
+        // 绘制当前页的内容
+        pageCtx.drawImage(
+          canvas,
+          0, sourceY, canvas.width, sourceHeight,
+          0, 0, canvas.width, sourceHeight
+        );
+
+        const pageImgData = pageCanvas.toDataURL('image/png');
+        doc.addImage(pageImgData, 'PNG', 0, 0, imgWidth, pageHeight);
+      }
+
+      doc.save(`稿件排期报表-${new Date().toISOString().split('T')[0]}.pdf`);
+
+      if (!silent) {
+        showNotification('PDF导出成功!', 'success');
+        this.closeExportModal();
+      }
+    } catch (error) {
+      console.error('PDF导出失败:', error);
+      if (!silent) {
+        showNotification('PDF导出失败,请重试', 'error');
+      }
+    }
+  },
+
+  calculateStats() {
+    const stats = {
+      total: filteredTasks.length,
+      confirmed: 0,
+      pending: 0,
+      unconfirmed: 0
+    };
+
+    filteredTasks.forEach(task => {
+      if (task.status === '已确认') stats.confirmed++;
+      else if (task.status === '待开始') stats.pending++;
+      else if (task.status === '未确认') stats.unconfirmed++;
+    });
+
+    return stats;
+  },
+
+  async exportAll() {
+    try {
+      showNotification('正在导出所有格式...', 'info');
+
+      // 依次导出三种格式,使用silent模式
+      this.exportToJSON(true);
+
+      // 延迟一点时间,避免浏览器阻止多个下载
+      await new Promise(resolve => setTimeout(resolve, 300));
+      this.exportToCSV(true);
+
+      await new Promise(resolve => setTimeout(resolve, 300));
+      await this.exportToPDF(true);
+
+      showNotification('所有格式已成功导出! (JSON + CSV + PDF)', 'success');
+      this.closeExportModal();
+    } catch (error) {
+      console.error('批量导出失败:', error);
+      showNotification('部分导出失败,请检查', 'error');
+    }
+  },
+
+  async exportAllDataToPDF() {
+    try {
+      showNotification('正在生成完整PDF报表...', 'info');
+
+      // 创建一个临时容器用于PDF内容
+      const pdfContainer = document.createElement('div');
+      pdfContainer.style.cssText = `
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        width: 800px;
+        background: white;
+        padding: 40px;
+        font-family: 'Nunito', 'Microsoft YaHei', sans-serif;
+      `;
+
+      // 使用所有任务数据而不是筛选后的数据
+      const allTasksData = allTasks;
+
+      // 统计所有数据
+      const totalStats = {
+        total: allTasksData.length,
+        confirmed: 0,
+        pending: 0,
+        unconfirmed: 0
+      };
+
+      allTasksData.forEach(task => {
+        if (task.status === '已确认') totalStats.confirmed++;
+        else if (task.status === '待开始') totalStats.pending++;
+        else if (task.status === '未确认') totalStats.unconfirmed++;
+      });
+
+      const dateStr = new Date().toLocaleDateString('zh-CN');
+
+      // 生成PDF内容HTML
+      let htmlContent = `
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #A6B1E1; font-size: 32px; margin: 0 0 10px 0; font-family: 'Playfair Display', serif;">✨ 稿件排期管理</h1>
+          <h2 style="color: #E9A6A6; font-size: 24px; margin: 0 0 10px 0;">Artist Scheduler - 完整数据报表</h2>
+          <p style="color: #888; font-size: 14px; margin: 0;">导出日期: ${dateStr}</p>
+          <p style="color: #A6B1E1; font-size: 12px; margin: 5px 0 0 0; font-weight: bold;">包含所有年份所有数据</p>
+        </div>
+
+        <div style="background: #F9F6F1; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+          <h3 style="color: #2C2C2C; margin: 0 0 15px 0; font-size: 18px;">📊 总体统计</h3>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+            <div style="text-align: center;">
+              <div style="font-size: 28px; font-weight: bold; color: #A6B1E1;">${totalStats.total}</div>
+              <div style="font-size: 12px; color: #666; margin-top: 5px;">总任务数</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 28px; font-weight: bold; color: #6B9080;">${totalStats.confirmed}</div>
+              <div style="font-size: 12px; color: #666; margin-top: 5px;">已确认</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 28px; font-weight: bold; color: #D4C5B9;">${totalStats.pending}</div>
+              <div style="font-size: 12px; color: #666; margin-top: 5px;">待开始</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 28px; font-weight: bold; color: #E8B4B8;">${totalStats.unconfirmed}</div>
+              <div style="font-size: 12px; color: #666; margin-top: 5px;">未确认</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // 按年份分组
+      const tasksByYear = {};
+      allTasksData.forEach(task => {
+        if (!tasksByYear[task.year]) {
+          tasksByYear[task.year] = {};
+        }
+        if (!tasksByYear[task.year][task.month]) {
+          tasksByYear[task.year][task.month] = [];
+        }
+        tasksByYear[task.year][task.month].push(task);
+      });
+
+      const monthsZh = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+      const years = Object.keys(tasksByYear).sort((a, b) => b - a);
+
+      // 为每个年份生成一个表格
+      years.forEach((year, yearIndex) => {
+        const yearTasks = Object.values(tasksByYear[year]).flat();
+        const yearStats = {
+          total: yearTasks.length,
+          confirmed: yearTasks.filter(t => t.status === '已确认').length,
+          pending: yearTasks.filter(t => t.status === '待开始').length,
+          unconfirmed: yearTasks.filter(t => t.status === '未确认').length
+        };
+
+        htmlContent += `
+          <div style="page-break-before: ${yearIndex > 0 ? 'always' : 'auto'}; margin-top: ${yearIndex > 0 ? '0' : '30px'};">
+            <div style="background: linear-gradient(135deg, #A6B1E1, #E9A6A6); color: white; padding: 15px 20px; border-radius: 12px; margin-bottom: 15px;">
+              <h3 style="margin: 0 0 10px 0; font-size: 22px; font-family: 'Playfair Display', serif;">${year}年度数据</h3>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 12px;">
+                <div>总计: ${yearStats.total}</div>
+                <div>已确认: ${yearStats.confirmed}</div>
+                <div>待开始: ${yearStats.pending}</div>
+                <div>未确认: ${yearStats.unconfirmed}</div>
+              </div>
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px;">
+              <thead>
+                <tr style="background: linear-gradient(135deg, #A6B1E1, #E9A6A6); color: white;">
+                  <th style="padding: 10px 6px; text-align: center; border: 1px solid #ddd;">月份</th>
+                  <th style="padding: 10px 6px; text-align: left; border: 1px solid #ddd;">类型</th>
+                  <th style="padding: 10px 6px; text-align: center; border: 1px solid #ddd;">状态</th>
+                  <th style="padding: 10px 6px; text-align: left; border: 1px solid #ddd;">地点</th>
+                  <th style="padding: 10px 6px; text-align: left; border: 1px solid #ddd;">参与画师</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+
+        let rowIndex = 0;
+        monthsZh.forEach(month => {
+          if (tasksByYear[year][month]) {
+            tasksByYear[year][month].forEach(task => {
+              const statusColor =
+                task.status === '已确认' ? '#6B9080' :
+                task.status === '待开始' ? '#D4C5B9' : '#E8B4B8';
+
+              const bgColor = rowIndex % 2 === 0 ? '#FFFFFF' : '#F9F6F1';
+              const artistsText = task.artists ? task.artists.join('、') : '-';
+
+              htmlContent += `
+                <tr style="background: ${bgColor};">
+                  <td style="padding: 8px 6px; text-align: center; border: 1px solid #ddd;">${month}</td>
+                  <td style="padding: 8px 6px; border: 1px solid #ddd;">${task.type || '-'}</td>
+                  <td style="padding: 8px 6px; text-align: center; border: 1px solid #ddd;">
+                    <span style="background: ${statusColor}; color: white; padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: bold;">${task.status || '-'}</span>
+                  </td>
+                  <td style="padding: 8px 6px; border: 1px solid #ddd;">${task.location || '-'}</td>
+                  <td style="padding: 8px 6px; border: 1px solid #ddd;">${artistsText}</td>
+                </tr>
+              `;
+              rowIndex++;
+            });
+          }
+        });
+
+        htmlContent += `
+              </tbody>
+            </table>
+          </div>
+        `;
+      });
+
+      htmlContent += `
+        <div style="margin-top: 30px; text-align: center; color: #888; font-size: 12px; page-break-before: avoid;">
+          <p>© 2025 Artist Scheduler | 用心管理每一份创作 🎨</p>
+          <p>Made with ❤️ for Artists</p>
+        </div>
+      `;
+
+      pdfContainer.innerHTML = htmlContent;
+      document.body.appendChild(pdfContainer);
+
+      // 使用html2canvas将内容转换为图片
+      const canvas = await html2canvas(pdfContainer, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        windowHeight: pdfContainer.scrollHeight
+      });
+
+      // 移除临时容器
+      document.body.removeChild(pdfContainer);
+
+      // 创建PDF
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('p', 'mm', 'a4');
+
+      const imgWidth = 210; // A4宽度(mm)
+      const pageHeight = 297; // A4高度(mm)
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      // 计算需要多少页
+      const pageCount = Math.ceil(imgHeight / pageHeight);
+
+      // 逐页添加内容,避免在中间截断
+      for (let i = 0; i < pageCount; i++) {
+        if (i > 0) {
+          doc.addPage();
+        }
+
+        const sourceY = i * (canvas.height / pageCount);
+        const sourceHeight = canvas.height / pageCount;
+
+        // 创建临时canvas来裁剪当前页
+        const pageCanvas = document.createElement('canvas');
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = sourceHeight;
+        const pageCtx = pageCanvas.getContext('2d');
+
+        // 绘制当前页的内容
+        pageCtx.drawImage(
+          canvas,
+          0, sourceY, canvas.width, sourceHeight,
+          0, 0, canvas.width, sourceHeight
+        );
+
+        const pageImgData = pageCanvas.toDataURL('image/png');
+        doc.addImage(pageImgData, 'PNG', 0, 0, imgWidth, pageHeight);
+      }
+
+      doc.save(`稿件排期完整报表-${new Date().toISOString().split('T')[0]}.pdf`);
+      showNotification('完整PDF报表导出成功!', 'success');
+      this.closeExportModal();
+    } catch (error) {
+      console.error('完整PDF导出失败:', error);
+      showNotification('完整PDF导出失败,请重试', 'error');
+    }
   }
 };
 
@@ -544,11 +997,39 @@ function setupFeatureEventListeners() {
 
   // 导出数据按钮
   document.getElementById('exportData').addEventListener('click', () => {
-    if (confirm('选择导出格式:\n确定 = JSON\n取消 = CSV')) {
-      DataExporter.exportToJSON();
-    } else {
-      DataExporter.exportToCSV();
-    }
+    DataExporter.showExportModal();
+  });
+
+  // 导出弹窗关闭
+  document.getElementById('closeExportModal').addEventListener('click', () => {
+    DataExporter.closeExportModal();
+  });
+  document.getElementById('exportModalClose').addEventListener('click', () => {
+    DataExporter.closeExportModal();
+  });
+
+  // 导出选项点击
+  document.querySelectorAll('.export-option').forEach(option => {
+    option.addEventListener('click', () => {
+      const format = option.dataset.format;
+      switch(format) {
+        case 'json':
+          DataExporter.exportToJSON();
+          break;
+        case 'csv':
+          DataExporter.exportToCSV();
+          break;
+        case 'pdf':
+          DataExporter.exportToPDF();
+          break;
+        case 'pdf-all':
+          DataExporter.exportAllDataToPDF();
+          break;
+        case 'all':
+          DataExporter.exportAll();
+          break;
+      }
+    });
   });
 
   // 主题切换按钮

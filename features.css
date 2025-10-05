@@ -73,6 +73,10 @@
   flex-direction: column;
 }
 
+.modal-content.modal-small {
+  max-width: 500px;
+}
+
 @keyframes fadeIn {
   from {opacity: 0;}
   to {opacity: 1;}
@@ -532,5 +536,112 @@ body.dark-mode .no-tasks {
 
   .modal-footer .btn {
     width: 100%;
+  }
+}
+
+/* ========== 导出选项样式 ========== */
+.export-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.export-option {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border: 2px solid var(--border-light);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.export-option:hover {
+  border-color: var(--primary-color);
+  background: rgba(166, 177, 225, 0.05);
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px var(--shadow-medium);
+}
+
+.export-option:active {
+  transform: translateX(5px) scale(0.98);
+}
+
+.export-option.export-all {
+  background: linear-gradient(135deg, rgba(166, 177, 225, 0.1), rgba(233, 166, 166, 0.1));
+  border: 2px solid var(--primary-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.export-option.export-all::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.export-option.export-all:hover::before {
+  left: 100%;
+}
+
+.export-option.export-all:hover {
+  background: linear-gradient(135deg, rgba(166, 177, 225, 0.15), rgba(233, 166, 166, 0.15));
+  border-color: var(--accent-color);
+  transform: translateX(8px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(166, 177, 225, 0.3);
+}
+
+.export-option.export-all .export-title {
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+}
+
+.export-icon {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+}
+
+.export-info {
+  flex: 1;
+}
+
+.export-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 0.3rem;
+}
+
+.export-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 480px) {
+  .export-option {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .export-icon {
+    font-size: 2rem;
+  }
+
+  .export-title {
+    font-size: 1rem;
+  }
+
+  .export-desc {
+    font-size: 0.85rem;
   }
 }

@@ -109,7 +109,6 @@ Artist-Scheduler/
       "id": 1,
       "month": "1月",
       "type": "双人机",
-      "partner": "小师",
       "location": "纯白",
       "artists": ["一川", "小师"],
       "status": "待开始",
@@ -123,7 +122,6 @@ Artist-Scheduler/
 - `id`: 唯一标识符
 - `month`: 月份 (1月-12月)
 - `type`: 任务类型
-- `partner`: 合作伙伴 (可选)
 - `location`: 地点 (可选)
 - `artists`: 参与画师数组
 - `status`: 状态 (待开始/已确认/未确认)

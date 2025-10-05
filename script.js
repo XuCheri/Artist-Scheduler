@@ -130,14 +130,12 @@ function renderListView() {
 
   container.innerHTML = filteredTasks.map((task, index) => {
     const artistsText = task.artists ? task.artists.join('、') : '';
-    const partnerText = task.partner ? `🤝 合作伙伴: ${task.partner}` : '';
     const locationText = task.location ? `📍 地点: ${task.location}` : '';
 
     return `
     <div class="task-card ${task.status}" onclick="TaskManager.showTaskDetail(filteredTasks[${index}])">
       <h3>${task.type}</h3>
       <div class="month">📅 ${task.year}年 ${task.month}</div>
-      ${partnerText ? `<div class="partner">${partnerText}</div>` : ''}
       ${locationText ? `<div class="location">${locationText}</div>` : ''}
       <div class="artists">👥 参与画师: ${artistsText}</div>
       <span class="status-badge ${task.status}">${task.status}</span>
@@ -174,7 +172,6 @@ function renderCalendarView() {
           <div class="calendar-task ${task.status}">
             <div class="task-type">${task.type}</div>
             <div class="task-artists">${artistsText}${moreArtists}</div>
-            ${task.partner ? `<div class="task-partner">🤝 ${task.partner}</div>` : ''}
             ${task.location ? `<div class="task-location">📍 ${task.location}</div>` : ''}
           </div>
         `;
@@ -210,7 +207,6 @@ function renderTimelineView() {
 
   sortedTasks.forEach((task, index) => {
     const artistsText = task.artists ? task.artists.join('、') : '';
-    const partnerText = task.partner ? `🤝 合作: ${task.partner}` : '';
     const locationText = task.location ? `📍 ${task.location}` : '';
 
     html += `
@@ -218,7 +214,6 @@ function renderTimelineView() {
         <div class="timeline-card ${task.status}">
           <div class="timeline-month">${task.year}年 ${task.month}</div>
           <h3>${task.type}</h3>
-          ${partnerText ? `<div class="partner">${partnerText}</div>` : ''}
           ${locationText ? `<div class="location">${locationText}</div>` : ''}
           <div class="artists">👥 ${artistsText}</div>
           <span class="status-badge ${task.status}">${task.status}</span>
