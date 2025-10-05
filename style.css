@@ -2,19 +2,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Nunito:wght@300;400;600;700&display=swap');
 
 :root {
-  /* 配色方案 */
+  /* 配色方案 - 优雅莫兰迪色系 */
   --bg-color: #F9F6F1;
   --primary-color: #A6B1E1;
   --accent-color: #E9A6A6;
   --status-inprogress: #7D9D9C;
-  --status-pending: #C7C7C7;
+  --status-pending: #D4C5B9;
   --status-completed: #88B04B;
-  --status-confirmed: #88B04B;
-  --status-unconfirmed: #E9A6A6;
-  --text-color: #333333;
+  --status-confirmed: #6B9080;
+  --status-unconfirmed: #E8B4B8;
+  --text-color: #2C2C2C;
+  --text-secondary: #6B6B6B;
   --card-bg: #FFFFFF;
-  --shadow-light: rgba(0, 0, 0, 0.1);
-  --shadow-hover: rgba(0, 0, 0, 0.15);
+  --shadow-light: rgba(166, 177, 225, 0.08);
+  --shadow-medium: rgba(166, 177, 225, 0.12);
+  --shadow-hover: rgba(166, 177, 225, 0.2);
+  --border-light: rgba(166, 177, 225, 0.15);
 }
 
 * {
@@ -53,13 +56,53 @@ body {
   font-size: 1rem;
   opacity: 0.95;
   font-weight: 300;
+  margin-bottom: 1.5rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+.header-btn {
+  padding: 0.7rem 1.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.header-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.header-btn.primary {
+  background: white;
+  color: var(--primary-color);
+  border-color: white;
+}
+
+.header-btn.primary:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px) scale(1.05);
 }
 
 /* ========== 主容器 ========== */
 .container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 2.5rem 2rem;
 }
 
 /* ========== 工具栏（筛选与切换） ========== */
@@ -68,12 +111,13 @@ body {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  padding: 1.5rem;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  padding: 2rem;
   background: var(--card-bg);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px var(--shadow-light);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px var(--shadow-light);
+  border: 1px solid var(--border-light);
 }
 
 .filters {
@@ -83,20 +127,28 @@ body {
 }
 
 .filters select {
-  padding: 0.6rem 1.2rem;
-  border: 2px solid var(--primary-color);
-  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid var(--border-light);
+  border-radius: 10px;
   background: white;
   color: var(--text-color);
   font-family: 'Nunito', sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
 }
 
 .filters select:hover {
-  border-color: var(--accent-color);
-  box-shadow: 0 2px 6px var(--shadow-light);
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px var(--shadow-medium);
+  transform: translateY(-1px);
+}
+
+.filters select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(166, 177, 225, 0.1);
 }
 
 .view-toggle {
@@ -105,27 +157,32 @@ body {
 }
 
 .view-btn {
-  padding: 0.6rem 1.5rem;
-  border: 2px solid var(--primary-color);
-  border-radius: 8px;
+  padding: 0.75rem 1.8rem;
+  border: 2px solid var(--border-light);
+  border-radius: 10px;
   background: white;
   color: var(--text-color);
   font-family: 'Nunito', sans-serif;
   font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
 }
 
 .view-btn:hover {
-  background: var(--primary-color);
-  color: white;
+  background: linear-gradient(135deg, rgba(166, 177, 225, 0.1), rgba(233, 166, 166, 0.1));
+  border-color: var(--primary-color);
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-medium);
 }
 
 .view-btn.active {
-  background: var(--primary-color);
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
   color: white;
   font-weight: 600;
+  border-color: transparent;
+  box-shadow: 0 4px 16px var(--shadow-hover);
 }
 
 /* ========== 月份导航 ========== */
@@ -138,27 +195,34 @@ body {
 }
 
 .month-nav button {
-  padding: 0.7rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  background: var(--primary-color);
-  color: white;
+  padding: 0.8rem 2rem;
+  border: 2px solid var(--border-light);
+  border-radius: 12px;
+  background: white;
+  color: var(--text-color);
   font-family: 'Nunito', sans-serif;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px var(--shadow-light);
 }
 
 .month-nav button:hover {
-  background: var(--accent-color);
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  color: white;
+  border-color: transparent;
   transform: scale(1.05);
+  box-shadow: 0 4px 16px var(--shadow-hover);
 }
 
 .current-month {
   font-family: 'Playfair Display', serif;
-  font-size: 1.8rem;
-  font-weight: 600;
+  font-size: 2rem;
+  font-weight: 700;
   color: var(--primary-color);
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(166, 177, 225, 0.1);
 }
 
 /* ========== 视图容器 ========== */
@@ -175,25 +239,44 @@ body {
 /* ========== 列表视图 ========== */
 .list-view {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 2rem;
 }
 
 .task-card {
   background: var(--card-bg);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 6px var(--shadow-light);
-  border-left: 5px solid var(--status-pending);
-  transition: all 0.3s ease;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 16px var(--shadow-light);
+  border-left: 6px solid var(--status-pending);
+  border: 1px solid var(--border-light);
+  border-left: 6px solid var(--status-pending);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   position: relative;
   overflow: hidden;
 }
 
+.task-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.task-card:hover::before {
+  opacity: 1;
+}
+
 .task-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 16px var(--shadow-hover);
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px var(--shadow-hover);
+  border-color: transparent;
 }
 
 .task-card.进行中 {
@@ -218,39 +301,54 @@ body {
 
 .task-card h3 {
   font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  margin-bottom: 0.8rem;
   color: var(--text-color);
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
 .task-card .month {
-  font-size: 0.9rem;
+  display: inline-block;
+  font-size: 0.85rem;
   color: var(--primary-color);
   font-weight: 600;
-  margin-bottom: 0.8rem;
+  margin-bottom: 1rem;
+  padding: 0.3rem 0.8rem;
+  background: rgba(166, 177, 225, 0.1);
+  border-radius: 6px;
 }
 
 .task-card .partner,
 .task-card .location {
-  font-size: 0.85rem;
-  color: #666;
-  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .task-card .artists {
-  font-size: 0.85rem;
-  color: #666;
-  margin-bottom: 0.8rem;
-  line-height: 1.4;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+  padding: 0.8rem;
+  background: rgba(249, 246, 241, 0.5);
+  border-radius: 8px;
+  border-left: 3px solid var(--border-light);
 }
 
 .task-card .status-badge {
   display: inline-block;
-  padding: 0.4rem 1rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  padding: 0.5rem 1.2rem;
+  border-radius: 25px;
+  font-size: 0.8rem;
+  font-weight: 700;
   color: white;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .status-badge.进行中 {
@@ -284,58 +382,65 @@ body {
 /* 年历视图 - 按月份分组 */
 .year-calendar {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
 }
 
 .month-section {
   background: white;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 2px 6px var(--shadow-light);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px var(--shadow-light);
+  border: 1px solid var(--border-light);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .month-section:hover {
-  box-shadow: 0 4px 12px var(--shadow-hover);
-  transform: translateY(-3px);
+  box-shadow: 0 8px 24px var(--shadow-hover);
+  transform: translateY(-6px);
+  border-color: var(--primary-color);
 }
 
 .month-header {
   background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
   color: white;
-  padding: 1rem;
+  padding: 1.3rem;
   text-align: center;
   font-family: 'Playfair Display', serif;
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .month-tasks {
-  padding: 1rem;
-  min-height: 100px;
+  padding: 1.2rem;
+  min-height: 120px;
 }
 
 .no-tasks {
   text-align: center;
-  color: #999;
-  padding: 2rem 0;
-  font-size: 0.9rem;
+  color: var(--text-secondary);
+  padding: 2.5rem 0;
+  font-size: 0.95rem;
+  opacity: 0.6;
 }
 
 .calendar-task {
   background: var(--status-pending);
   color: white;
-  padding: 0.7rem;
-  margin-bottom: 0.7rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  padding: 1rem;
+  margin-bottom: 0.8rem;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .calendar-task:hover {
-  opacity: 0.85;
-  transform: translateX(3px);
+  opacity: 0.9;
+  transform: translateX(6px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .calendar-task:last-child {
@@ -343,21 +448,23 @@ body {
 }
 
 .calendar-task .task-type {
-  font-weight: 600;
-  font-size: 0.95rem;
-  margin-bottom: 0.3rem;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.3px;
 }
 
 .calendar-task .task-artists {
-  font-size: 0.8rem;
-  opacity: 0.9;
-  margin-bottom: 0.2rem;
+  font-size: 0.85rem;
+  opacity: 0.95;
+  margin-bottom: 0.3rem;
 }
 
 .calendar-task .task-partner,
 .calendar-task .task-location {
-  font-size: 0.75rem;
-  opacity: 0.85;
+  font-size: 0.8rem;
+  opacity: 0.9;
+  margin-top: 0.3rem;
 }
 
 .calendar-task.已确认 {
@@ -522,17 +629,37 @@ body {
 
 .timeline-card {
   background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px var(--shadow-light);
-  border-left: 4px solid var(--status-pending);
-  transition: all 0.3s ease;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 16px var(--shadow-light);
+  border: 1px solid var(--border-light);
+  border-left: 6px solid var(--status-pending);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   margin-left: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.timeline-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.timeline-card:hover::before {
+  opacity: 1;
 }
 
 .timeline-card:hover {
-  transform: translateX(5px);
-  box-shadow: 0 4px 12px var(--shadow-hover);
+  transform: translateX(8px);
+  box-shadow: 0 8px 24px var(--shadow-hover);
+  border-color: transparent;
 }
 
 .timeline-card.进行中 {
@@ -557,29 +684,43 @@ body {
 
 .timeline-card h3 {
   font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--text-color);
 }
 
 .timeline-card .timeline-month {
-  font-size: 0.9rem;
+  display: inline-block;
+  font-size: 0.85rem;
   color: var(--primary-color);
   font-weight: 600;
-  margin-bottom: 0.8rem;
+  margin-bottom: 1rem;
+  padding: 0.3rem 0.8rem;
+  background: rgba(166, 177, 225, 0.1);
+  border-radius: 6px;
 }
 
 .timeline-card .partner,
 .timeline-card .location {
-  font-size: 0.85rem;
-  color: #666;
-  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .timeline-card .artists {
-  font-size: 0.85rem;
-  color: #666;
-  margin-bottom: 0.8rem;
-  line-height: 1.4;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+  padding: 0.8rem;
+  background: rgba(249, 246, 241, 0.5);
+  border-radius: 8px;
+  border-left: 3px solid var(--border-light);
 }
 
 .timeline-progress {
@@ -617,31 +758,81 @@ body {
   color: var(--accent-color);
 }
 
+/* ========== 页面加载动画 ========== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.toolbar {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.month-nav {
+  animation: fadeInUp 0.6s ease-out 0.1s backwards;
+}
+
+.view-container {
+  animation: fadeInUp 0.6s ease-out 0.2s backwards;
+}
+
 /* ========== 响应式设计 ========== */
+@media (max-width: 1024px) {
+  .year-calendar {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
   .header h1 {
     font-size: 1.8rem;
   }
 
+  .container {
+    padding: 1.5rem 1rem;
+  }
+
   .toolbar {
     flex-direction: column;
     align-items: stretch;
+    padding: 1.5rem;
+    gap: 1rem;
   }
 
   .filters,
   .view-toggle {
     flex-direction: column;
+    width: 100%;
+  }
+
+  .filters select,
+  .view-btn {
+    width: 100%;
   }
 
   .month-nav {
     gap: 1rem;
+    flex-wrap: wrap;
   }
 
   .current-month {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
+    width: 100%;
+    text-align: center;
   }
 
   .list-view {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .year-calendar {
     grid-template-columns: 1fr;
   }
 
@@ -660,6 +851,11 @@ body {
 
   .timeline-card {
     margin-left: 0.5rem;
+    padding: 1.5rem;
+  }
+
+  .timeline-item {
+    padding-left: 1.5rem;
   }
 }
 
@@ -676,6 +872,16 @@ body {
     font-size: 1.5rem;
   }
 
+  .task-card,
+  .timeline-card {
+    padding: 1.5rem;
+  }
+
+  .task-card h3,
+  .timeline-card h3 {
+    font-size: 1.3rem;
+  }
+
   .calendar-day {
     min-height: 60px;
     padding: 0.3rem;
@@ -683,6 +889,11 @@ body {
 
   .day-number {
     font-size: 0.75rem;
+  }
+
+  .month-nav button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
   }
 }
 

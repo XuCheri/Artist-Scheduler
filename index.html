@@ -6,18 +6,29 @@
   <meta name="description" content="职业画师稿件排期管理与可视化工具">
   <title>稿件排期管理 | Artist Scheduler</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="features.css">
 </head>
 <body>
   <!-- 顶部标题区域 -->
   <header class="header">
     <h1>✨ 稿件排期管理</h1>
     <p>Artist Schedule | 职业画师工作流管理</p>
+    <div class="header-actions">
+      <button id="toggleTheme" class="header-btn" title="切换主题">🌓</button>
+      <button id="exportData" class="header-btn" title="导出数据">📥</button>
+      <button id="addTask" class="header-btn primary" title="新增任务">➕ 新增任务</button>
+    </div>
   </header>
 
   <!-- 主容器 -->
   <div class="container">
     <!-- 工具栏:筛选与视图切换 -->
     <div class="toolbar">
+      <!-- 搜索框 -->
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 搜索任务、画师、客户..." />
+      </div>
+
       <!-- 筛选器 -->
       <div class="filters">
         <select id="yearFilter">
@@ -54,9 +65,11 @@
 
       <!-- 视图切换 -->
       <div class="view-toggle">
+        <button class="view-btn" data-view="dashboard">📊 统计</button>
         <button class="view-btn active" data-view="list">📋 列表</button>
         <button class="view-btn" data-view="calendar">📅 日历</button>
-        <button class="view-btn" data-view="timeline">📊 时间轴</button>
+        <button class="view-btn" data-view="timeline">⏱️ 时间轴</button>
+        <button class="view-btn" data-view="gantt">📈 甘特图</button>
       </div>
     </div>
 
@@ -65,6 +78,11 @@
       <button id="prevYear">◀ 上一年</button>
       <div class="current-month" id="currentYear">2025年</div>
       <button id="nextYear">下一年 ▶</button>
+    </div>
+
+    <!-- ========== 统计视图 ========== -->
+    <div id="dashboardView" class="view-container dashboard-view hidden">
+      <div class="loading">加载中</div>
     </div>
 
     <!-- ========== 列表视图 ========== -->
@@ -81,6 +99,99 @@
     <div id="timelineView" class="view-container timeline-view hidden">
       <div class="loading">加载中</div>
     </div>
+
+    <!-- ========== 甘特图视图 ========== -->
+    <div id="ganttView" class="view-container gantt-view hidden">
+      <div class="loading">加载中</div>
+    </div>
+  </div>
+
+  <!-- ========== 任务详情弹窗 ========== -->
+  <div id="taskModal" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">任务详情</h2>
+        <button class="modal-close" id="closeModal">×</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- 动态内容 -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="modalClose">关闭</button>
+        <button class="btn btn-primary" id="modalEdit">编辑</button>
+        <button class="btn btn-danger" id="modalDelete">删除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 任务表单弹窗 ========== -->
+  <div id="taskFormModal" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="formModalTitle">新增任务</h2>
+        <button class="modal-close" id="closeFormModal">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="taskForm">
+          <div class="form-group">
+            <label>年份 *</label>
+            <input type="number" id="taskYear" required placeholder="2025" />
+          </div>
+          <div class="form-group">
+            <label>月份 *</label>
+            <select id="taskMonth" required>
+              <option value="">选择月份</option>
+              <option value="1月">1月</option>
+              <option value="2月">2月</option>
+              <option value="3月">3月</option>
+              <option value="4月">4月</option>
+              <option value="5月">5月</option>
+              <option value="6月">6月</option>
+              <option value="7月">7月</option>
+              <option value="8月">8月</option>
+              <option value="9月">9月</option>
+              <option value="10月">10月</option>
+              <option value="11月">11月</option>
+              <option value="12月">12月</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>类型 *</label>
+            <input type="text" id="taskType" required placeholder="双人机/情头/双男等" />
+          </div>
+          <div class="form-group">
+            <label>合作伙伴</label>
+            <input type="text" id="taskPartner" placeholder="可选" />
+          </div>
+          <div class="form-group">
+            <label>地点</label>
+            <input type="text" id="taskLocation" placeholder="可选" />
+          </div>
+          <div class="form-group">
+            <label>参与画师 * (用逗号分隔)</label>
+            <input type="text" id="taskArtists" required placeholder="一川,小师,秋秋" />
+          </div>
+          <div class="form-group">
+            <label>状态 *</label>
+            <select id="taskStatus" required>
+              <option value="待开始">待开始</option>
+              <option value="已确认">已确认</option>
+              <option value="未确认">未确认</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>备注</label>
+            <textarea id="taskNotes" rows="3" placeholder="可选"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="formModalClose">取消</button>
+        <button class="btn btn-primary" id="formModalSave">保存</button>
+      </div>
+    </div>
   </div>
 
   <!-- 页脚 -->
@@ -91,5 +202,6 @@
 
   <!-- JavaScript -->
   <script src="script.js"></script>
+  <script src="features.js"></script>
 </body>
 </html>

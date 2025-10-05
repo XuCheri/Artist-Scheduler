@@ -8,20 +8,38 @@ let filteredTasks = [];
 // ========== 初始化 ==========
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    // 加载任务数据
-    const response = await fetch('data.json');
-    const data = await response.json();
+    // 优先从本地存储加载
+    const localData = Storage.load();
 
-    // 将数据转换为扁平化数组,便于处理
-    allTasks = [];
-    Object.keys(data).forEach(year => {
-      data[year].forEach(task => {
-        allTasks.push({
-          ...task,
-          year: year
+    if (localData) {
+      // 使用本地数据
+      allTasks = [];
+      Object.keys(localData).forEach(year => {
+        localData[year].forEach(task => {
+          allTasks.push({
+            ...task,
+            year: year
+          });
         });
       });
-    });
+    } else {
+      // 从JSON文件加载
+      const response = await fetch('data.json');
+      const data = await response.json();
+
+      allTasks = [];
+      Object.keys(data).forEach(year => {
+        data[year].forEach(task => {
+          allTasks.push({
+            ...task,
+            year: year
+          });
+        });
+      });
+
+      // 首次加载时保存到本地存储
+      Storage.save(allTasks);
+    }
 
     // 初始化过滤器
     populateFilters();
@@ -83,6 +101,9 @@ function renderCurrentView() {
   container.classList.remove('hidden');
 
   switch (currentView) {
+    case 'dashboard':
+      Dashboard.render();
+      break;
     case 'list':
       renderListView();
       break;
@@ -91,6 +112,9 @@ function renderCurrentView() {
       break;
     case 'timeline':
       renderTimelineView();
+      break;
+    case 'gantt':
+      GanttChart.render();
       break;
   }
 }
@@ -104,13 +128,13 @@ function renderListView() {
     return;
   }
 
-  container.innerHTML = filteredTasks.map(task => {
+  container.innerHTML = filteredTasks.map((task, index) => {
     const artistsText = task.artists ? task.artists.join('、') : '';
     const partnerText = task.partner ? `🤝 合作伙伴: ${task.partner}` : '';
     const locationText = task.location ? `📍 地点: ${task.location}` : '';
 
     return `
-    <div class="task-card ${task.status}">
+    <div class="task-card ${task.status}" onclick="TaskManager.showTaskDetail(filteredTasks[${index}])">
       <h3>${task.type}</h3>
       <div class="month">📅 ${task.year}年 ${task.month}</div>
       ${partnerText ? `<div class="partner">${partnerText}</div>` : ''}
@@ -260,6 +284,9 @@ function applyFilters() {
     const matchMonth = !monthFilter || task.month === monthFilter;
     return matchYear && matchType && matchStatus && matchMonth;
   });
+
+  // 应用搜索过滤
+  filteredTasks = SearchManager.filter(filteredTasks);
 
   updateYearDisplay();
   renderCurrentView();
