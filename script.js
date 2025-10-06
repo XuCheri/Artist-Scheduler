@@ -8,38 +8,22 @@ let filteredTasks = [];
 // ========== 初始化 ==========
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    // 优先从本地存储加载
-    const localData = Storage.load();
+    // 总是从JSON文件加载最新数据
+    const response = await fetch('data.json');
+    const data = await response.json();
 
-    if (localData) {
-      // 使用本地数据
-      allTasks = [];
-      Object.keys(localData).forEach(year => {
-        localData[year].forEach(task => {
-          allTasks.push({
-            ...task,
-            year: year
-          });
+    allTasks = [];
+    Object.keys(data).forEach(year => {
+      data[year].forEach(task => {
+        allTasks.push({
+          ...task,
+          year: year
         });
       });
-    } else {
-      // 从JSON文件加载
-      const response = await fetch('data.json');
-      const data = await response.json();
+    });
 
-      allTasks = [];
-      Object.keys(data).forEach(year => {
-        data[year].forEach(task => {
-          allTasks.push({
-            ...task,
-            year: year
-          });
-        });
-      });
-
-      // 首次加载时保存到本地存储
-      Storage.save(allTasks);
-    }
+    // 保存到本地存储(用于用户手动添加的任务)
+    Storage.save(allTasks);
 
     // 初始化过滤器
     populateFilters();
@@ -130,15 +114,17 @@ function renderListView() {
 
   container.innerHTML = filteredTasks.map((task, index) => {
     const artistsText = task.artists ? task.artists.join('、') : '';
-    const locationText = task.location ? `📍 地点: ${task.location}` : '';
+    const artistsTempText = task.artistsTemp ? `、${task.artistsTemp.join('、')} (暂定)` : '';
+    const locationText = task.location ? `📍 场馆: ${task.location}` : '';
+    const displayStatus = (task.status === '已确认' || task.status === '待开始') ? '待开始' : task.status;
 
     return `
     <div class="task-card ${task.status}" onclick="TaskManager.showTaskDetail(filteredTasks[${index}])">
       <h3>${task.type}</h3>
       <div class="month">📅 ${task.year}年 ${task.month}</div>
       ${locationText ? `<div class="location">${locationText}</div>` : ''}
-      <div class="artists">👥 参与画师: ${artistsText}</div>
-      <span class="status-badge ${task.status}">${task.status}</span>
+      <div class="artists">👥 参与画师: ${artistsText}${artistsTempText}</div>
+      <span class="status-badge ${task.status}">${displayStatus}</span>
     </div>
   `}).join('');
 }
@@ -164,12 +150,14 @@ function renderCalendarView() {
     if (tasksInMonth.length === 0) {
       html += '<div class="no-tasks">暂无任务</div>';
     } else {
-      tasksInMonth.forEach(task => {
-        const artistsText = task.artists ? task.artists.slice(0, 3).join('、') : '';
-        const moreArtists = task.artists && task.artists.length > 3 ? `+${task.artists.length - 3}` : '';
+      tasksInMonth.forEach((task, taskIndex) => {
+        const allArtists = [...(task.artists || []), ...(task.artistsTemp || [])];
+        const artistsText = allArtists.slice(0, 3).join('、');
+        const moreArtists = allArtists.length > 3 ? `+${allArtists.length - 3}` : '';
+        const taskIndexInFiltered = filteredTasks.indexOf(task);
 
         html += `
-          <div class="calendar-task ${task.status}">
+          <div class="calendar-task ${task.status}" onclick="TaskManager.showTaskDetail(filteredTasks[${taskIndexInFiltered}])" style="cursor: pointer;">
             <div class="task-type">${task.type}</div>
             <div class="task-artists">${artistsText}${moreArtists}</div>
             ${task.location ? `<div class="task-location">📍 ${task.location}</div>` : ''}
@@ -203,20 +191,39 @@ function renderTimelineView() {
     return monthOrder.indexOf(a.month) - monthOrder.indexOf(b.month);
   });
 
-  let html = '<div class="timeline-container">';
+  let html = '<div class="timeline-wrapper">';
+  let currentMonth = '';
 
   sortedTasks.forEach((task, index) => {
-    const artistsText = task.artists ? task.artists.join('、') : '';
-    const locationText = task.location ? `📍 ${task.location}` : '';
+    const artistsText = task.artists ? task.artists.slice(0, 3).join('、') : '';
+    const moreArtists = task.artists && task.artists.length > 3 ? `+${task.artists.length - 3}` : '';
+    const artistsTempText = task.artistsTemp ? ` (暂${task.artistsTemp.length})` : '';
+    const displayStatus = (task.status === '已确认' || task.status === '待开始') ? '待开始' : task.status;
+    const taskIndexInFiltered = filteredTasks.indexOf(task);
+
+    // 如果是新的月份，添加月份标记
+    if (currentMonth !== task.month) {
+      currentMonth = task.month;
+      html += `
+        <div class="timeline-month-marker">
+          <div class="timeline-month-dot"></div>
+          <div class="timeline-month-label">${task.year}年 ${task.month}</div>
+        </div>
+      `;
+    }
 
     html += `
-      <div class="timeline-item ${task.status}" style="animation-delay: ${index * 0.1}s">
-        <div class="timeline-card ${task.status}">
-          <div class="timeline-month">${task.year}年 ${task.month}</div>
-          <h3>${task.type}</h3>
-          ${locationText ? `<div class="location">${locationText}</div>` : ''}
-          <div class="artists">👥 ${artistsText}</div>
-          <span class="status-badge ${task.status}">${task.status}</span>
+      <div class="timeline-item" style="animation-delay: ${index * 0.05}s">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content ${task.status}" onclick="TaskManager.showTaskDetail(filteredTasks[${taskIndexInFiltered}])" style="cursor: pointer;">
+          <div class="timeline-header">
+            <span class="timeline-type">${task.type}</span>
+            <span class="timeline-status ${task.status}">${displayStatus}</span>
+          </div>
+          <div class="timeline-info">
+            ${task.location ? `<span class="timeline-location">📍 ${task.location}</span>` : ''}
+            <span class="timeline-artists">👥 ${artistsText}${moreArtists}${artistsTempText}</span>
+          </div>
         </div>
       </div>
     `;

@@ -4,14 +4,15 @@
       "id": 1,
       "month": "1月",
       "type": "双男",
-      "artists": ["一川", "回忆", "壹拾一"],
-      "status": "未确认"
+      "location": "春色纪元",
+      "artists": ["一川", "回忆", "壹拾一","犬三","黑雀"],
+      "status": "已确认"
     },
     {
       "id": 2,
       "month": "1月",
       "type": "双人机",
-      "partner": "小师",
+      "location": "黑潮",
       "artists": ["一川", "小师"],
       "status": "待开始"
     },
@@ -19,13 +20,15 @@
       "id": 3,
       "month": "2月",
       "type": "双女",
+      "location": "春色纪元",
       "artists": ["一川", "楼妹", "秋天弘", "suki", "ame"],
       "status": "已确认"
     },
     {
       "id": 4,
       "month": "2月",
-      "type": "黑潮",
+      "type": "情头",
+      "location": "黑潮",
       "artists": ["一川", "乔郁", "仪", "uki", "艾格"],
       "status": "已确认"
     },
@@ -33,14 +36,23 @@
       "id": 5,
       "month": "2月",
       "type": "情头",
-      "location": "纯白",
+      "location": "玉米杯",
       "artists": ["一川", "贝也", "Lionz", "氮", "uki"],
       "status": "待开始"
+    },
+    {
+      "id": 999,
+      "month": "2月",
+      "type": "情头",
+      "location": "纯白",
+      "artists": ["一川", "铭", "zoo"],
+      "status": "未确认"
     },
     {
       "id": 6,
       "month": "3月",
       "type": "双男",
+      "location": "春色纪元",
       "artists": ["一川", "回忆", "乔郁", "云中兔", "壹拾一"],
       "status": "未确认"
     },
@@ -48,21 +60,23 @@
       "id": 7,
       "month": "3月",
       "type": "双人机",
-      "partner": "秋秋",
+      "location": "黑潮",
       "artists": ["一川", "秋秋"],
       "status": "待开始"
     },
     {
       "id": 8,
       "month": "4月",
-      "type": "双女",
+      "type": "双女", 
+      "location": "春色纪元",
       "artists": ["一川", "楼妹", "秋田弘", "suki", "ame"],
       "status": "已确认"
     },
     {
       "id": 9,
       "month": "4月",
-      "type": "黑潮",
+      "type": "情头",
+      "location": "黑潮",
       "artists": ["一川", "仪", "氮", "桃铃", "元石"],
       "status": "已确认"
     },
@@ -70,14 +84,15 @@
       "id": 10,
       "month": "5月",
       "type": "双男",
-      "artists": ["一川", "回忆", "跳跳", "早睡", "乔郁"],
+      "location": "春色纪元",
+      "artists": ["一川", "回忆", "跳跳", "早睡", "于了"],
       "status": "已确认"
     },
     {
       "id": 11,
       "month": "5月",
       "type": "双人机",
-      "partner": "秋秋",
+      "location": "黑潮",
       "artists": ["一川", "秋秋"],
       "status": "待开始"
     },
@@ -85,13 +100,15 @@
       "id": 12,
       "month": "6月",
       "type": "双女",
+      "location": "春色纪元",
       "artists": ["一川", "枝禾", "suki", "晨晨", "回忆"],
       "status": "已确认"
     },
     {
       "id": 13,
       "month": "6月",
-      "type": "黑潮",
+      "type": "情头",
+      "location": "黑潮",
       "artists": ["一川", "仪", "uki", "秋田弘", "喰"],
       "status": "已确认"
     },
@@ -99,7 +116,7 @@
       "id": 14,
       "month": "6月",
       "type": "双人机",
-      "partner": "秋秋",
+      "location": "黑潮",
       "artists": ["一川", "秋秋"],
       "status": "待开始"
     },
@@ -107,6 +124,7 @@
       "id": 15,
       "month": "6月",
       "type": "情头",
+      "location": "玉米杯",
       "artists": ["一川", "贝也", "喵辣", "郴", "氮"],
       "status": "待开始"
     },
@@ -114,7 +132,7 @@
       "id": 16,
       "month": "7月",
       "type": "双人机",
-      "partner": "小师",
+      "location": "黑潮",
       "artists": ["一川", "小师"],
       "status": "待开始"
     },
@@ -123,6 +141,14 @@
       "month": "7月",
       "type": "情头",
       "location": "纯白",
+      "artists": ["一川", "铭", "zoo","亚麻"],
+      "status": "待开始"
+    },
+    {
+      "id": 1006,
+      "month": "7月",
+      "type": "情头商稿",
+      "location": "堆糖",
       "artists": ["一川"],
       "status": "待开始"
     },
@@ -130,6 +156,7 @@
       "id": 18,
       "month": "8月",
       "type": "双女",
+      "location": "春色纪元",
       "artists": ["一川", "枝禾", "suki", "晨晨", "kino"],
       "status": "已确认"
     },
@@ -137,13 +164,15 @@
       "id": 19,
       "month": "8月",
       "type": "双男",
+      "location": "春色纪元",
       "artists": ["一川", "回忆", "画扇", "十一号", "跳跳"],
       "status": "已确认"
     },
     {
       "id": 20,
       "month": "8月",
-      "type": "黑潮",
+      "type": "情头",
+      "location": "黑潮",
       "artists": ["一川", "不困", "仪", "铭氮", "周年庆"],
       "status": "已确认"
     },
@@ -151,42 +180,42 @@
       "id": 21,
       "month": "9月",
       "type": "双男",
-      "artists": ["一川", "回忆", "跳跳", "奥", "乔郁"],
-      "status": "已确认"
+      "location": "春色纪元",
+      "artists": ["一川", "回忆", "跳跳", "奥"],
+      "artistsTemp":["乔郁"] ,
+      "status": "未确认"
     },
     {
       "id": 22,
       "month": "10月",
       "type": "双女",
+      "location": "春色纪元",
       "artists": ["一川", "suki", "楼妹", "晨晨", "回忆"],
       "status": "已确认"
     },
     {
       "id": 23,
       "month": "10月",
-      "type": "黑潮",
-      "artists": ["一川", "回忆", "uki", "桃铃"],
+      "type": "情头",
+      "location": "黑潮",
+      "artists": ["一川", "回忆", "uki", "桃铃","秋田弘"],
+      "artistsTemp":["回忆"] ,
       "status": "未确认"
-    },
-    {
-      "id": 24,
-      "month": "10月",
-      "type": "其他",
-      "artists": ["一川", "回忆", "乔郁", "仪", "于了"],
-      "status": "已确认"
     },
     {
       "id": 25,
       "month": "11月",
       "type": "双男",
-      "artists": ["一川", "回忆", "跳跳", "奥", "乔郁"],
-      "status": "已确认"
+      "location": "春色纪元",
+      "artists": ["一川", "回忆", "跳跳", "奥"],
+      "artistsTemp":["乔郁"] ,
+      "status": "未确认"
     },
     {
       "id": 26,
       "month": "11月",
       "type": "双人机",
-      "partner": "秋秋",
+      "location": "黑潮",
       "artists": ["一川", "秋秋"],
       "status": "待开始"
     },
@@ -202,44 +231,41 @@
       "id": 28,
       "month": "12月",
       "type": "双女",
-      "artists": ["一川", "suki", "楼妹", "回忆"],
-      "status": "未确认"
+      "location": "春色纪元",
+      "artists": ["一川", "suki", "楼妹", "回忆","yisa"],
+      "status": "已确认"
     },
     {
       "id": 29,
       "month": "12月",
-      "type": "黑潮",
-      "artists": ["一川", "回忆", "云中兔"],
-      "status": "未确认"
+      "type": "情头",
+      "location": "黑潮",
+      "artists": ["一川", "回忆", "云中兔","晨晨"],
+      "status": "已确认"
     },
     {
       "id": 30,
       "month": "12月",
       "type": "双人机",
-      "partner": "秋秋",
+      "location": "黑潮",
       "artists": ["一川", "秋秋"],
       "status": "待开始"
-    },
-    {
-      "id": 31,
-      "month": "12月",
-      "type": "其他",
-      "artists": ["一川", "回忆", "驴", "跳跳", "元石"],
-      "status": "已确认"
     }
   ],
   "2025": [
     {
       "id": 1,
       "month": "10月",
-      "type": "直购",
+      "type": "直购情头",
+      "location": "黑潮",
       "artists": ["一川"],
       "status": "待开始"
     },
     {
       "id": 2,
       "month": "10月",
-      "type": "双男",
+      "type": "双男返场",
+      "location": "黑潮",
       "artists": ["一川"],
       "status": "待开始"
     },
@@ -247,41 +273,39 @@
       "id": 3,
       "month": "10月",
       "type": "双人机",
-      "artists": ["一川"],
+      "location": "黑潮",
+      "artists": ["一川","秋田弘"],
       "status": "待开始"
     },
     {
       "id": 4,
       "month": "11月",
-      "type": "玉米杯",
+      "type": "情头",
+      "location": "玉米杯",
       "artists": ["一川", "云中兔", "ennki", "铭", "贝也"],
-      "status": "待开始"
-    },
-    {
-      "id": 5,
-      "month": "11月",
-      "type": "时间线",
-      "artists": ["一川"],
       "status": "待开始"
     },
     {
       "id": 6,
       "month": "11月",
       "type": "情头",
+      "location": "时间线",
       "artists": ["一川", "亚麻", "铭", "喵辣", "河马"],
       "status": "已确认"
+    },
+    {
+      "id": 8,
+      "month": "11月",
+      "type": "情头商稿",
+      "location": "乐尤",
+      "artists": ["一川"],
+      "status": "待开始"
     },
     {
       "id": 7,
       "month": "12月",
       "type": "双男",
-      "artists": ["一川"],
-      "status": "待开始"
-    },
-    {
-      "id": 8,
-      "month": "12月",
-      "type": "时间线",
+      "location": "春色纪元",
       "artists": ["一川"],
       "status": "待开始"
     },
@@ -289,6 +313,7 @@
       "id": 9,
       "month": "12月",
       "type": "情头",
+      "location": "时间线",
       "artists": ["一川", "uki", "河马", "业", "Lionz"],
       "status": "已确认"
     }
