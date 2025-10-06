@@ -666,7 +666,7 @@ const DataExporter = {
           </div>
     `;
 
-    filteredTasks.slice(0, 20).forEach(task => {
+    filteredTasks.forEach(task => {
       const monthIndex = monthsZh.indexOf(task.month);
       const statusColor = (task.status === '已确认' || task.status === '待开始') ? '#D4C5B9' : '#E8B4B8';
       html += `
@@ -895,13 +895,20 @@ const DataExporter = {
       pdfContainer.innerHTML = htmlContent;
       document.body.appendChild(pdfContainer);
 
+      // 等待DOM渲染完成
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // 获取容器的实际高度
+      const containerHeight = pdfContainer.scrollHeight;
+
       // 使用html2canvas将内容转换为图片
       const canvas = await html2canvas(pdfContainer, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
-        windowHeight: pdfContainer.scrollHeight
+        windowHeight: containerHeight,
+        height: containerHeight
       });
 
       // 移除临时容器
@@ -1254,13 +1261,20 @@ const DataExporter = {
       pdfContainer.innerHTML = htmlContent;
       document.body.appendChild(pdfContainer);
 
+      // 等待DOM渲染完成
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // 获取容器的实际高度
+      const containerHeight = pdfContainer.scrollHeight;
+
       // 使用html2canvas将内容转换为图片
       const canvas = await html2canvas(pdfContainer, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
-        windowHeight: pdfContainer.scrollHeight
+        windowHeight: containerHeight,
+        height: containerHeight
       });
 
       // 移除临时容器
@@ -1294,6 +1308,268 @@ const DataExporter = {
     } catch (error) {
       console.error('完整PDF导出失败:', error);
       showNotification('完整PDF导出失败,请重试', 'error');
+    }
+  },
+
+  async exportAllDataToImage() {
+    try {
+      showNotification('正在生成完整图片报表...', 'info');
+
+      // 创建一个临时容器用于图片内容
+      const imageContainer = document.createElement('div');
+      imageContainer.style.cssText = `
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        width: 1200px;
+        background: white;
+        padding: 40px;
+        font-family: 'Nunito', 'Microsoft YaHei', sans-serif;
+      `;
+
+      // 使用所有任务数据而不是筛选后的数据
+      const allTasksData = allTasks;
+
+      // 统计所有数据
+      const totalStats = {
+        total: allTasksData.length,
+        confirmed: 0,
+        pending: 0,
+        unconfirmed: 0,
+        byType: {},
+        byArtist: {},
+        byLocation: {}
+      };
+
+      allTasksData.forEach(task => {
+        if (task.status === '已确认' || task.status === '待开始') totalStats.pending++;
+        else if (task.status === '未确认') totalStats.unconfirmed++;
+
+        // 类型统计
+        totalStats.byType[task.type] = (totalStats.byType[task.type] || 0) + 1;
+
+        // 画师统计
+        if (task.artists) {
+          task.artists.forEach(artist => {
+            totalStats.byArtist[artist] = (totalStats.byArtist[artist] || 0) + 1;
+          });
+        }
+        if (task.artistsTemp) {
+          task.artistsTemp.forEach(artist => {
+            totalStats.byArtist[artist] = (totalStats.byArtist[artist] || 0) + 1;
+          });
+        }
+
+        // 场馆统计
+        if (task.location) {
+          totalStats.byLocation[task.location] = (totalStats.byLocation[task.location] || 0) + 1;
+        }
+      });
+
+      const dateStr = new Date().toLocaleDateString('zh-CN');
+
+      // 生成图片内容HTML
+      let htmlContent = `
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #A6B1E1; font-size: 32px; margin: 0 0 10px 0; font-family: 'Playfair Display', serif;">✨ 稿件排期管理</h1>
+          <h2 style="color: #E9A6A6; font-size: 24px; margin: 0 0 10px 0;">Artist Scheduler - 完整数据报表</h2>
+          <p style="color: #888; font-size: 14px; margin: 0;">导出日期: ${dateStr}</p>
+          <p style="color: #A6B1E1; font-size: 12px; margin: 5px 0 0 0; font-weight: bold;">包含所有年份所有数据</p>
+        </div>
+
+        <div style="background: #F9F6F1; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+          <h3 style="color: #2C2C2C; margin: 0 0 15px 0; font-size: 18px;">📊 总体统计</h3>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+            <div style="text-align: center;">
+              <div style="font-size: 28px; font-weight: bold; color: #A6B1E1;">${totalStats.total}</div>
+              <div style="font-size: 12px; color: #666; margin-top: 5px;">总任务数</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 28px; font-weight: bold; color: #6B9080;">${totalStats.confirmed}</div>
+              <div style="font-size: 12px; color: #666; margin-top: 5px;">已确认</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 28px; font-weight: bold; color: #D4C5B9;">${totalStats.pending}</div>
+              <div style="font-size: 12px; color: #666; margin-top: 5px;">待开始</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 28px; font-weight: bold; color: #E8B4B8;">${totalStats.unconfirmed}</div>
+              <div style="font-size: 12px; color: #666; margin-top: 5px;">未确认</div>
+            </div>
+          </div>
+        </div>
+
+        ${this.generateStatsChartsHTML(totalStats)}
+      `;
+
+      // 按年份分组
+      const tasksByYear = {};
+      allTasksData.forEach(task => {
+        if (!tasksByYear[task.year]) {
+          tasksByYear[task.year] = {};
+        }
+        if (!tasksByYear[task.year][task.month]) {
+          tasksByYear[task.year][task.month] = [];
+        }
+        tasksByYear[task.year][task.month].push(task);
+      });
+
+      const monthsZh = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+      const years = Object.keys(tasksByYear).sort((a, b) => b - a);
+
+      // 为每个年份生成一个表格
+      years.forEach((year, yearIndex) => {
+        const yearTasks = Object.values(tasksByYear[year]).flat();
+        const yearStats = {
+          total: yearTasks.length,
+          confirmed: 0,
+          pending: yearTasks.filter(t => t.status === '已确认' || t.status === '待开始').length,
+          unconfirmed: yearTasks.filter(t => t.status === '未确认').length
+        };
+
+        htmlContent += `
+          <div style="margin-top: ${yearIndex > 0 ? '40px' : '30px'};">
+            <div style="background: linear-gradient(135deg, #A6B1E1, #E9A6A6); color: white; padding: 15px 20px; border-radius: 12px; margin-bottom: 15px;">
+              <h3 style="margin: 0 0 10px 0; font-size: 22px; font-family: 'Playfair Display', serif;">${year}年度数据</h3>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 12px;">
+                <div>总计: ${yearStats.total}</div>
+                <div>已确认: ${yearStats.confirmed}</div>
+                <div>待开始: ${yearStats.pending}</div>
+                <div>未确认: ${yearStats.unconfirmed}</div>
+              </div>
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px;">
+              <thead>
+                <tr style="background: linear-gradient(135deg, #A6B1E1, #E9A6A6); color: white;">
+                  <th style="padding: 10px 6px; text-align: center; border: 1px solid #ddd; width: 40px;">序号</th>
+                  <th style="padding: 10px 6px; text-align: center; border: 1px solid #ddd;">月份</th>
+                  <th style="padding: 10px 6px; text-align: left; border: 1px solid #ddd;">类型</th>
+                  <th style="padding: 10px 6px; text-align: center; border: 1px solid #ddd;">状态</th>
+                  <th style="padding: 10px 6px; text-align: left; border: 1px solid #ddd;">场馆</th>
+                  <th style="padding: 10px 6px; text-align: left; border: 1px solid #ddd;">参与画师</th>
+                  <th style="padding: 10px 6px; text-align: left; border: 1px solid #ddd;">暂定画师</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+
+        let rowIndex = 0;
+        monthsZh.forEach(month => {
+          if (tasksByYear[year][month]) {
+            tasksByYear[year][month].forEach(task => {
+              const displayStatus = (task.status === '已确认' || task.status === '待开始') ? '待开始' : task.status;
+              const statusColor =
+                (task.status === '已确认' || task.status === '待开始') ? '#D4C5B9' : '#E8B4B8';
+
+              const bgColor = rowIndex % 2 === 0 ? '#FFFFFF' : '#F9F6F1';
+              const artistsText = task.artists ? task.artists.join('、') : '-';
+              const artistsTempText = task.artistsTemp ? task.artistsTemp.join('、') : '-';
+
+              htmlContent += `
+                <tr style="background: ${bgColor};">
+                  <td style="padding: 8px 6px; text-align: center; border: 1px solid #ddd; font-weight: 600; color: #888;">${rowIndex + 1}</td>
+                  <td style="padding: 8px 6px; text-align: center; border: 1px solid #ddd;">${month}</td>
+                  <td style="padding: 8px 6px; border: 1px solid #ddd;">${task.type || '-'}</td>
+                  <td style="padding: 8px 6px; text-align: center; border: 1px solid #ddd;">
+                    <span style="background: ${statusColor}; color: white; padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: bold;">${displayStatus || '-'}</span>
+                  </td>
+                  <td style="padding: 8px 6px; border: 1px solid #ddd;">${task.location || '-'}</td>
+                  <td style="padding: 8px 6px; border: 1px solid #ddd;">${artistsText}</td>
+                  <td style="padding: 8px 6px; border: 1px solid #ddd;">${artistsTempText}</td>
+                </tr>
+              `;
+              rowIndex++;
+            });
+          }
+        });
+
+        htmlContent += `
+              </tbody>
+            </table>
+        `;
+
+        // 为每个年份添加可视化视图
+        const yearTasksArray = Object.values(tasksByYear[year]).flat();
+        const yearStatsForViz = {
+          byType: {},
+          byArtist: {},
+          byLocation: {}
+        };
+
+        yearTasksArray.forEach(task => {
+          yearStatsForViz.byType[task.type] = (yearStatsForViz.byType[task.type] || 0) + 1;
+          if (task.artists) {
+            task.artists.forEach(artist => {
+              yearStatsForViz.byArtist[artist] = (yearStatsForViz.byArtist[artist] || 0) + 1;
+            });
+          }
+          if (task.artistsTemp) {
+            task.artistsTemp.forEach(artist => {
+              yearStatsForViz.byArtist[artist] = (yearStatsForViz.byArtist[artist] || 0) + 1;
+            });
+          }
+          if (task.location) {
+            yearStatsForViz.byLocation[task.location] = (yearStatsForViz.byLocation[task.location] || 0) + 1;
+          }
+        });
+
+        // 生成可视化视图HTML (需要临时设置filteredTasks为当前年份的任务)
+        const savedFilteredTasks = filteredTasks;
+        filteredTasks = yearTasksArray;
+        htmlContent += this.generateVisualizationHTML(tasksByYear, yearStatsForViz, monthsZh);
+        filteredTasks = savedFilteredTasks;
+
+        htmlContent += `
+          </div>
+        `;
+      });
+
+      htmlContent += `
+        <div style="margin-top: 30px; text-align: center; color: #888; font-size: 12px;">
+          <p>© 2025 Artist Scheduler | 用心管理每一份创作 🎨</p>
+          <p>Made with ❤️ for Artists</p>
+          <p style="margin-top: 15px; color: #666;">本报表由 Artist Scheduler 自动生成</p>
+          <p style="margin-top: 5px; color: #999; font-size: 11px;">一个专为职业画师设计的稿件排期管理工具</p>
+          <p style="margin-top: 8px;">
+            访问在线工具: <a href="https://xucheri.github.io/Artist-Scheduler/" style="color: #A6B1E1; text-decoration: none; font-weight: bold;">https://xucheri.github.io/Artist-Scheduler/</a>
+          </p>
+        </div>
+      `;
+
+      imageContainer.innerHTML = htmlContent;
+      document.body.appendChild(imageContainer);
+
+      // 等待DOM渲染完成
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // 获取容器的实际高度
+      const containerHeight = imageContainer.scrollHeight;
+
+      // 使用html2canvas将内容转换为图片
+      const canvas = await html2canvas(imageContainer, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        windowHeight: containerHeight,
+        height: containerHeight
+      });
+
+      // 移除临时容器
+      document.body.removeChild(imageContainer);
+
+      // 将canvas转换为图片并下载
+      const link = document.createElement('a');
+      link.download = `稿件排期完整报表-${new Date().toISOString().split('T')[0]}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+
+      showNotification('完整图片报表导出成功!', 'success');
+      this.closeExportModal();
+    } catch (error) {
+      console.error('完整图片导出失败:', error);
+      showNotification('完整图片导出失败,请重试', 'error');
     }
   }
 };
@@ -1405,6 +1681,9 @@ function setupFeatureEventListeners() {
           break;
         case 'pdf-all':
           DataExporter.exportAllDataToPDF();
+          break;
+        case 'image-all':
+          DataExporter.exportAllDataToImage();
           break;
         case 'all':
           DataExporter.exportAll();
