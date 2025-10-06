@@ -257,6 +257,74 @@
     </div>
   </div>
 
+  <!-- ========== 导出内容选择弹窗 ========== -->
+  <div id="exportContentModal" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content modal-medium">
+      <div class="modal-header">
+        <h2>选择导出内容</h2>
+        <button class="modal-close" id="closeExportContentModal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="export-content-options">
+          <label class="checkbox-option disabled">
+            <input type="checkbox" id="exportTaskList" checked disabled>
+            <span class="checkbox-label">
+              <strong>📋 任务列表</strong>
+              <small>任务详情表格（必选）</small>
+            </span>
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" id="exportTypeStats" checked>
+            <span class="checkbox-label">
+              <strong>🎨 任务类型统计</strong>
+              <small>按任务类型统计图表</small>
+            </span>
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" id="exportLocationStats" checked>
+            <span class="checkbox-label">
+              <strong>🏛️ 场馆任务统计</strong>
+              <small>按场馆统计图表</small>
+            </span>
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" id="exportArtistStats" checked>
+            <span class="checkbox-label">
+              <strong>👥 画师工作量统计</strong>
+              <small>按画师统计工作量</small>
+            </span>
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" id="exportTimeline" checked>
+            <span class="checkbox-label">
+              <strong>⏱️ 时间轴视图</strong>
+              <small>按月份展示任务时间线</small>
+            </span>
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" id="exportCalendar" checked>
+            <span class="checkbox-label">
+              <strong>📅 日历视图</strong>
+              <small>12个月日历布局</small>
+            </span>
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" id="exportGantt" checked>
+            <span class="checkbox-label">
+              <strong>📈 甘特图视图</strong>
+              <small>任务甘特图展示</small>
+            </span>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="exportContentCancel">取消</button>
+        <button class="btn btn-primary" id="exportContentConfirm">确认导出</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 页脚 -->
   <footer class="footer">
     <p>© 2025 Artist Scheduler | 用心管理每一份创作 🎨</p>

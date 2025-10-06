@@ -501,6 +501,8 @@ const GanttChart = {
 
 // ========== 数据导出 ==========
 const DataExporter = {
+  currentExportFormat: null, // 存储当前选择的导出格式
+
   showExportModal() {
     const modal = document.getElementById('exportModal');
     modal.classList.remove('hidden');
@@ -509,6 +511,31 @@ const DataExporter = {
   closeExportModal() {
     const modal = document.getElementById('exportModal');
     modal.classList.add('hidden');
+  },
+
+  showExportContentModal(format) {
+    this.currentExportFormat = format;
+    this.closeExportModal();
+    const modal = document.getElementById('exportContentModal');
+    modal.classList.remove('hidden');
+  },
+
+  closeExportContentModal() {
+    const modal = document.getElementById('exportContentModal');
+    modal.classList.add('hidden');
+    this.currentExportFormat = null;
+  },
+
+  getExportOptions() {
+    return {
+      taskList: true, // 必选
+      typeStats: document.getElementById('exportTypeStats').checked,
+      locationStats: document.getElementById('exportLocationStats').checked,
+      artistStats: document.getElementById('exportArtistStats').checked,
+      timeline: document.getElementById('exportTimeline').checked,
+      calendar: document.getElementById('exportCalendar').checked,
+      gantt: document.getElementById('exportGantt').checked
+    };
   },
 
   exportToJSON(silent = false) {
@@ -568,11 +595,12 @@ const DataExporter = {
   },
 
   // 生成可视化视图HTML
-  generateVisualizationHTML(tasksByYear, stats, monthsZh) {
+  generateVisualizationHTML(tasksByYear, stats, monthsZh, options = {}) {
     let html = '';
 
     // 时间轴视图
-    html += `
+    if (options.timeline !== false) {
+      html += `
       <div style="page-break-before: always; margin-top: 30px;">
         <h3 style="color: #2C2C2C; margin: 0 0 15px 0; font-size: 18px; border-bottom: 2px solid #A6B1E1; padding-bottom: 8px;">⏱️ 时间轴视图</h3>
         <div style="position: relative; padding-left: 20px;">
@@ -607,13 +635,15 @@ const DataExporter = {
       }
     });
 
-    html += `
+      html += `
         </div>
       </div>
-    `;
+      `;
+    }
 
     // 日历视图
-    html += `
+    if (options.calendar !== false) {
+      html += `
       <div style="page-break-before: always; margin-top: 30px;">
         <h3 style="color: #2C2C2C; margin: 0 0 15px 0; font-size: 18px; border-bottom: 2px solid #A6B1E1; padding-bottom: 8px;">📅 日历视图</h3>
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
@@ -648,13 +678,15 @@ const DataExporter = {
       `;
     });
 
-    html += `
+      html += `
         </div>
       </div>
-    `;
+      `;
+    }
 
     // 甘特图视图
-    html += `
+    if (options.gantt !== false) {
+      html += `
       <div style="page-break-before: always; margin-top: 30px;">
         <h3 style="color: #2C2C2C; margin: 0 0 15px 0; font-size: 18px; border-bottom: 2px solid #A6B1E1; padding-bottom: 8px;">📈 甘特图视图</h3>
         <div style="overflow-x: auto;">
@@ -684,21 +716,26 @@ const DataExporter = {
       `;
     });
 
-    html += `
+      html += `
         </div>
       </div>
-    `;
+      `;
+    }
 
     return html;
   },
 
   // 生成统计图表HTML
-  generateStatsChartsHTML(stats) {
+  generateStatsChartsHTML(stats, options = {}) {
     const maxTypeValue = Math.max(...Object.values(stats.byType), 1);
     const maxLocationValue = Math.max(...Object.values(stats.byLocation || {}), 1);
     const maxArtistValue = Math.max(...Object.values(stats.byArtist), 1);
 
-    return `
+    let html = '';
+
+    // 任务类型统计
+    if (options.typeStats !== false) {
+      html += `
       <div style="page-break-before: always; margin-top: 30px;">
         <h3 style="color: #2C2C2C; margin: 20px 0 15px 0; font-size: 18px; border-bottom: 2px solid #A6B1E1; padding-bottom: 8px;">🎨 任务类型统计</h3>
         ${Object.entries(stats.byType).sort((a, b) => b[1] - a[1]).map(([type, count]) => {
@@ -716,7 +753,12 @@ const DataExporter = {
           `;
         }).join('')}
       </div>
+      `;
+    }
 
+    // 场馆任务统计
+    if (options.locationStats !== false) {
+      html += `
       <div style="margin-top: 30px;">
         <h3 style="color: #2C2C2C; margin: 20px 0 15px 0; font-size: 18px; border-bottom: 2px solid #A6B1E1; padding-bottom: 8px;">🏛️ 场馆任务统计</h3>
         ${Object.keys(stats.byLocation || {}).length > 0 ? Object.entries(stats.byLocation).sort((a, b) => b[1] - a[1]).map(([location, count]) => {
@@ -734,7 +776,12 @@ const DataExporter = {
           `;
         }).join('') : '<p style="text-align: center; color: #999;">暂无场馆数据</p>'}
       </div>
+      `;
+    }
 
+    // 画师工作量统计
+    if (options.artistStats !== false) {
+      html += `
       <div style="page-break-before: always; margin-top: 30px;">
         <h3 style="color: #2C2C2C; margin: 20px 0 15px 0; font-size: 18px; border-bottom: 2px solid #A6B1E1; padding-bottom: 8px;">👥 画师工作量统计</h3>
         ${Object.entries(stats.byArtist).sort((a, b) => b[1] - a[1]).slice(0, 15).map(([artist, count]) => {
@@ -752,7 +799,10 @@ const DataExporter = {
           `;
         }).join('')}
       </div>
-    `;
+      `;
+    }
+
+    return html;
   },
 
   async exportToPDF(silent = false) {
@@ -1032,8 +1082,11 @@ const DataExporter = {
     }
   },
 
-  async exportAllDataToPDF() {
+  async exportAllDataToPDF(options = null) {
     try {
+      // 如果没有提供选项，则获取当前的导出选项
+      const exportOptions = options || this.getExportOptions();
+
       showNotification('正在生成完整PDF报表...', 'info');
 
       // 创建一个临时容器用于PDF内容
@@ -1120,7 +1173,7 @@ const DataExporter = {
           </div>
         </div>
 
-        ${this.generateStatsChartsHTML(totalStats)}
+        ${this.generateStatsChartsHTML(totalStats, exportOptions)}
       `;
 
       // 按年份分组
@@ -1238,7 +1291,7 @@ const DataExporter = {
         // 生成可视化视图HTML (需要临时设置filteredTasks为当前年份的任务)
         const savedFilteredTasks = filteredTasks;
         filteredTasks = yearTasksArray;
-        htmlContent += this.generateVisualizationHTML(tasksByYear, yearStatsForViz, monthsZh);
+        htmlContent += this.generateVisualizationHTML(tasksByYear, yearStatsForViz, monthsZh, exportOptions);
         filteredTasks = savedFilteredTasks;
 
         htmlContent += `
@@ -1311,8 +1364,11 @@ const DataExporter = {
     }
   },
 
-  async exportAllDataToImage() {
+  async exportAllDataToImage(options = null) {
     try {
+      // 如果没有提供选项，则获取当前的导出选项
+      const exportOptions = options || this.getExportOptions();
+
       showNotification('正在生成完整图片报表...', 'info');
 
       // 创建一个临时容器用于图片内容
@@ -1399,7 +1455,7 @@ const DataExporter = {
           </div>
         </div>
 
-        ${this.generateStatsChartsHTML(totalStats)}
+        ${this.generateStatsChartsHTML(totalStats, exportOptions)}
       `;
 
       // 按年份分组
@@ -1517,7 +1573,7 @@ const DataExporter = {
         // 生成可视化视图HTML (需要临时设置filteredTasks为当前年份的任务)
         const savedFilteredTasks = filteredTasks;
         filteredTasks = yearTasksArray;
-        htmlContent += this.generateVisualizationHTML(tasksByYear, yearStatsForViz, monthsZh);
+        htmlContent += this.generateVisualizationHTML(tasksByYear, yearStatsForViz, monthsZh, exportOptions);
         filteredTasks = savedFilteredTasks;
 
         htmlContent += `
@@ -1680,16 +1736,33 @@ function setupFeatureEventListeners() {
           DataExporter.exportToPDF();
           break;
         case 'pdf-all':
-          DataExporter.exportAllDataToPDF();
+          DataExporter.showExportContentModal('pdf-all');
           break;
         case 'image-all':
-          DataExporter.exportAllDataToImage();
+          DataExporter.showExportContentModal('image-all');
           break;
         case 'all':
           DataExporter.exportAll();
           break;
       }
     });
+  });
+
+  // 导出内容选择弹窗事件
+  document.getElementById('closeExportContentModal').addEventListener('click', () => {
+    DataExporter.closeExportContentModal();
+  });
+  document.getElementById('exportContentCancel').addEventListener('click', () => {
+    DataExporter.closeExportContentModal();
+  });
+  document.getElementById('exportContentConfirm').addEventListener('click', () => {
+    const options = DataExporter.getExportOptions();
+    if (DataExporter.currentExportFormat === 'pdf-all') {
+      DataExporter.exportAllDataToPDF(options);
+    } else if (DataExporter.currentExportFormat === 'image-all') {
+      DataExporter.exportAllDataToImage(options);
+    }
+    DataExporter.closeExportContentModal();
   });
 
   // 主题切换按钮
